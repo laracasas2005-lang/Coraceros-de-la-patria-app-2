@@ -437,64 +437,112 @@ if datos_cargados and len(df) > 0:
     st.markdown("---")
 
     # ============================================
-    # GRÁFICO 5: CORRELACIÓN
+    # GRÁFICO 5: CORRELACIÓN (CORREGIDO)
     # ============================================
     st.subheader("🔗 Matriz de correlación entre variables")
 
-    df_corr = df_filtrado.copy()
+    if len(df_filtrado) < 3:
+        st.warning("⚠️ Se necesitan al menos 3 registros para calcular correlaciones.")
+    else:
+        df_corr = df_filtrado.copy()
 
-    df_corr["alim_num"] = df_corr["tipo_alimentacion"].map({
-        "Saludable": 3,
-        "Mixta": 2,
-        "Alta en ultraprocesados": 1
-    })
+        # --- Codificar variables categóricas a numéricas ---
+        df_corr["alim_num"] = df_corr["tipo_alimentacion"].map({
+            "Saludable": 3,
+            "Mixta": 2,
+            "Alta en ultraprocesados": 1
+        })
 
-    df_corr["activ_num"] = df_corr["nivel_actividad"].map({
-        "Actividad alta": 4,
-        "Actividad media": 3,
-        "Actividad baja": 2,
-        "No hace deporte": 1,
-        "Sin datos": np.nan
-    })
+        df_corr["activ_num"] = df_corr["nivel_actividad"].map({
+            "Actividad alta": 4,
+            "Actividad media": 3,
+            "Actividad baja": 2,
+            "No hace deporte": 1,
+            "Sin datos": np.nan
+        })
 
-    df_corr["hidra_num"] = df_corr["hidratacion"].map({
-        "Buena hidratación": 3,
-        "Hidratación media": 2,
-        "Baja hidratación": 1
-    })
+        df_corr["hidra_num"] = df_corr["hidratacion"].map({
+            "Buena hidratación": 3,
+            "Hidratación media": 2,
+            "Baja hidratación": 1
+        })
 
-    df_corr["snacks_num"] = df_corr["consume_snacks"].map({"Sí": 1, "No": 0})
-    df_corr["entre_comidas_num"] = df_corr["come_entre_comidas"].map({"Sí": 1, "No": 0})
+        df_corr["snacks_num"] = df_corr["consume_snacks"].map({"Sí": 1, "No": 0})
+        df_corr["entre_comidas_num"] = df_corr["come_entre_comidas"].map({"Sí": 1, "No": 0})
 
-    columnas_corr = ["alim_num", "activ_num", "hidra_num",
-                     "snacks_num", "entre_comidas_num", "nivel_energia"]
+        columnas_corr = ["alim_num", "activ_num", "hidra_num",
+                         "snacks_num", "entre_comidas_num", "nivel_energia"]
 
-    corr_matrix = df_corr[columnas_corr].corr()
+        etiquetas = ["Alimentación", "Actividad", "Hidratación",
+                     "Snacks", "Entre comidas", "Energía"]
 
-    etiquetas = ["Alimentación", "Actividad", "Hidratación",
-                 "Snacks", "Entre comidas", "Energía"]
+        # --- Detectar variables sin variabilidad (varianza = 0) ---
+        variables_sin_varianza = []
+        for col, etiq in zip(columnas_corr, etiquetas):
+            if df_corr[col].nunique(dropna=True) <= 1:
+                variables_sin_varianza.append(etiq)
 
-    fig7 = go.Figure(data=go.Heatmap(
-        z=corr_matrix.values,
-        x=etiquetas,
-        y=etiquetas,
-        colorscale='RdBu_r',
-        zmin=-1,
-        zmax=1,
-        text=corr_matrix.round(2),
-        texttemplate='%{text}',
-        textfont={"size": 12, "color": "black"},
-        hoverongaps=False,
-        colorbar=dict(title="Correlación")
-    ))
+        # --- Calcular correlación ---
+        corr_matrix = df_corr[columnas_corr].corr()
 
-    fig7.update_layout(
-        title="Correlación entre variables del estudio",
-        height=500,
-        xaxis=dict(tickangle=45)
-    )
+        # --- Rellenar NaN con 0 para que no aparezcan celdas vacías ---
+        corr_matrix_clean = corr_matrix.fillna(0)
 
-    st.plotly_chart(fig7, use_container_width=True)
+        # --- Crear el heatmap ---
+        fig7 = go.Figure(data=go.Heatmap(
+            z=corr_matrix_clean.values,
+            x=etiquetas,
+            y=etiquetas,
+            colorscale='RdBu_r',
+            zmin=-1,
+            zmax=1,
+            text=corr_matrix_clean.round(2),
+            texttemplate='%{text}',
+            textfont={"size": 12, "color": "black"},
+            hoverongaps=False,
+            colorbar=dict(title="Correlación")
+        ))
+
+        fig7.update_layout(
+            title="Correlación entre variables del estudio",
+            height=500,
+            xaxis=dict(tickangle=45)
+        )
+
+        st.plotly_chart(fig7, use_container_width=True)
+
+        # --- Avisos sobre variables problemáticas ---
+        if variables_sin_varianza:
+            st.info(
+                f"ℹ️ **Variables sin variabilidad suficiente:** {', '.join(variables_sin_varianza)}. "
+                f"Estas variables tienen el mismo valor en todos los registros filtrados, "
+                f"por lo que su correlación no puede calcularse (se muestra como 0.00)."
+            )
+
+        # --- Advertencia sobre tamaño de muestra ---
+        if len(df_filtrado) < 30:
+            st.warning(
+                f"⚠️ **Muestra pequeña:** con solo {len(df_filtrado)} registros, "
+                f"las correlaciones son **poco confiables**. Se recomienda un mínimo de 30 casos "
+                f"para obtener resultados estadísticamente significativos."
+            )
+
+        # --- Nota explicativa ---
+        with st.expander("ℹ️ ¿Cómo interpretar la matriz de correlación?"):
+            st.markdown("""
+            - **+1.00**: relación directa perfecta (cuando una sube, la otra también)
+            - **0.00**: sin relación lineal
+            - **-1.00**: relación inversa perfecta (cuando una sube, la otra baja)
+
+            **Valores de referencia:**
+            - |r| < 0.3 → relación débil
+            - 0.3 ≤ |r| < 0.7 → relación moderada
+            - |r| ≥ 0.7 → relación fuerte
+
+            **Nota:** si una variable tiene el mismo valor en todos los casos
+            (por ejemplo, todos respondieron "Sí" a snacks), su correlación
+            no puede calcularse y aparece como 0.00.
+            """)
 
     st.markdown("---")
 
