@@ -356,7 +356,7 @@ if datos_cargados and len(df) > 0:
             fig.update_layout(height=350, showlegend=False, xaxis_tickangle=-20)
             st.plotly_chart(fig, use_container_width=True)
 
-    # --- 4. Frutas y verduras ---
+      # --- 4. Frutas y verduras ---
     st.markdown("#### 🥦 Frecuencia de consumo de frutas y verduras")
     conteo_frutas = df_filtrado["frecuencia_frutas_verduras"].value_counts().reset_index()
     conteo_frutas.columns = ["Respuesta", "Cantidad"]
@@ -372,7 +372,6 @@ if datos_cargados and len(df) > 0:
     fig_frutas.update_traces(textposition='outside')
     fig_frutas.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
     st.plotly_chart(fig_frutas, use_container_width=True)
-
     # --- 5. Snacks: frecuencia y tipo ---
     st.markdown("#### 🍪 Consumo de snacks")
 
