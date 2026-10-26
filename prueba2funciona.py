@@ -763,7 +763,7 @@ if datos_cargados and len(df) > 0:
 
     col_hall1, col_hall2, col_hall3 = st.columns(3)
 
-    pct_deporte = (df["hace_deporte"] == "Sí").sum / len(df) * 100
+   pct_deporte = (df["hace_deporte"] == "Sí").sum() / len(df) * 100
     pct_snacks = (df["consume_snacks"] == "Sí").sum() / len(df) * 100
     pct_buena_hidra = (df["hidratacion"] == "Buena hidratación").sum() / len(df) * 100
 
