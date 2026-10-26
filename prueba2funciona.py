@@ -60,7 +60,7 @@ def cargar_datos():
     # --- Unir ambos dataframes por id ---
     df = pd.merge(df_alim, df_activ, on="id", how="inner")
 
-    # --- Normalizar respuestas "Sí" / "No" (robusto ante tildes y mayúsculas) ---
+    # --- Normalizar respuestas "Sí" / "No" ---
     def normalizar_si_no(texto):
         if pd.isna(texto):
             return "No"
@@ -173,9 +173,9 @@ if datos_cargados and len(df) > 0:
     # ============================================
     st.subheader("📋 Sobre el estudio")
     st.write("""
-    Este estudio analiza la relación entre los **hábitos alimentarios** y la **actividad física** 
-    de niñas y niños del barrio. Se aplicaron dos encuestas: una sobre alimentación diaria y otra 
-    sobre deporte y percepción de energía. Los datos fueron anonimizados y unidos por un 
+    Este estudio analiza la relación entre los **hábitos alimentarios** y la **actividad física**
+    de niñas y niños del barrio. Se aplicaron dos encuestas: una sobre alimentación diaria y otra
+    sobre deporte y percepción de energía. Los datos fueron anonimizados y unidos por un
     identificador único.
     """)
 
@@ -263,7 +263,7 @@ if datos_cargados and len(df) > 0:
     st.subheader("🗣️ Resultados directos de las encuestas")
     st.caption("Respuestas tal como las marcaron los niños en cada pregunta.")
 
-    # --- ¿Cuántas comidas al día? ---
+    # --- 1. Comidas al día y frecuencia de alimentación ---
     col_p1, col_p2 = st.columns(2)
 
     with col_p1:
@@ -298,7 +298,7 @@ if datos_cargados and len(df) > 0:
         fig_p2.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
         st.plotly_chart(fig_p2, use_container_width=True)
 
-    # --- Tipos de comida que consumen ---
+    # --- 2. Tipos de comida que consumen ---
     st.markdown("#### 🍽️ Tipos de comida que consumen")
     st.caption("Cada niño podía elegir más de una opción. Se muestran todas las combinaciones posibles.")
 
@@ -323,11 +323,12 @@ if datos_cargados and len(df) > 0:
             text="Cantidad"
         )
         fig_p3.update_traces(textposition='outside')
-        fig_p3.update_layout(height=400, showlegend=False, yaxis=dict(autorange="reversed"),
+        fig_p3.update_layout(height=400, showlegend=False,
+                             yaxis=dict(autorange="reversed"),
                              coloraxis_showscale=False)
         st.plotly_chart(fig_p3, use_container_width=True)
 
-    # --- Frecuencia de consumo de cada comida ---
+    # --- 3. Frecuencia de consumo de cada comida ---
     st.markdown("#### 🔄 Frecuencia de consumo de cada comida")
     st.caption("¿Con qué frecuencia come pasta, carne y milanesa?")
 
@@ -354,7 +355,7 @@ if datos_cargados and len(df) > 0:
             fig.update_layout(height=350, showlegend=False, xaxis_tickangle=-20)
             st.plotly_chart(fig, use_container_width=True)
 
-    # --- Frutas y verduras ---
+    # --- 4. Frutas y verduras ---
     st.markdown("#### 🥦 Frecuencia de consumo de frutas y verduras")
     conteo_frutas = df_filtrado["frecuencia_frutas_verduras"].value_counts().reset_index()
     conteo_frutas.columns = ["Respuesta", "Cantidad"]
@@ -371,7 +372,7 @@ if datos_cargados and len(df) > 0:
     fig_frutas.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
     st.plotly_chart(fig_frutas, use_container_width=True)
 
-    # --- Snacks: frecuencia y tipo ---
+    # --- 5. Snacks: frecuencia y tipo ---
     st.markdown("#### 🍪 Consumo de snacks")
 
     col_s1, col_s2 = st.columns(2)
@@ -414,11 +415,12 @@ if datos_cargados and len(df) > 0:
                 text="Cantidad"
             )
             fig_s2.update_traces(textposition='outside')
-            fig_s2.update_layout(height=400, showlegend=False, yaxis=dict(autorange="reversed"),
+            fig_s2.update_layout(height=400, showlegend=False,
+                                 yaxis=dict(autorange="reversed"),
                                  coloraxis_showscale=False)
             st.plotly_chart(fig_s2, use_container_width=True)
 
-    # --- ¿Come entre comidas? y ¿Termina el plato? ---
+    # --- 6. ¿Come entre comidas? y ¿Termina el plato? ---
     col_e1, col_e2 = st.columns(2)
 
     with col_e1:
@@ -452,6 +454,39 @@ if datos_cargados and len(df) > 0:
         fig_e2.update_traces(textposition='outside')
         fig_e2.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
         st.plotly_chart(fig_e2, use_container_width=True)
+
+    # --- 7. Hidratación (respuesta directa) ---
+    st.markdown("#### 💧 ¿Cuánta agua tomás durante el día?")
+    conteo_agua = df_filtrado["frecuencia_agua"].value_counts().reset_index()
+    conteo_agua.columns = ["Respuesta", "Cantidad"]
+    fig_agua = px.bar(
+        conteo_agua,
+        x="Respuesta",
+        y="Cantidad",
+        title="Respuesta directa sobre hidratación",
+        color="Respuesta",
+        color_discrete_sequence=px.colors.qualitative.Set3,
+        text="Cantidad"
+    )
+    fig_agua.update_traces(textposition='outside')
+    fig_agua.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
+    st.plotly_chart(fig_agua, use_container_width=True)
+
+    # --- 8. ¿Tenés alguna dieta especial? ---
+    st.markdown("#### 🥗 ¿Tenés alguna dieta especial?")
+    conteo_dieta = df_filtrado["dieta_especial"].value_counts().reset_index()
+    conteo_dieta.columns = ["Respuesta", "Cantidad"]
+    fig_dieta = px.pie(
+        conteo_dieta,
+        names="Respuesta",
+        values="Cantidad",
+        title="Distribución de dietas especiales",
+        color="Respuesta",
+        hole=0.4
+    )
+    fig_dieta.update_traces(textposition='inside', textinfo='percent+label')
+    fig_dieta.update_layout(height=400)
+    st.plotly_chart(fig_dieta, use_container_width=True)
 
     st.markdown("---")
 
@@ -543,7 +578,7 @@ if datos_cargados and len(df) > 0:
     st.markdown("---")
 
     # ============================================
-    # GRÁFICO 3: SNACKS (top 10)
+    # GRÁFICO 3: SNACKS
     # ============================================
     st.subheader("🍪 Snacks más consumidos")
 
@@ -776,6 +811,9 @@ if datos_cargados and len(df) > 0:
     # ============================================
     st.subheader("💡 Hallazgos principales")
 
+    col_hall1, col_hall2, col_hall3 = st.columns(3)
+
+    pct_deporte = (df["hace_deporte"] == "Sí").sum() / len(df) *
     col_hall1, col_hall2, col_hall3 = st.columns(3)
 
     pct_deporte = (df["hace_deporte"] == "Sí").sum() / len(df) * 100
