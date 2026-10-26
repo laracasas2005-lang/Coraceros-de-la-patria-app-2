@@ -545,17 +545,32 @@ if datos_cargados and len(df) > 0:
 
     st.markdown("---")
 
-    # ============================================
+      # ============================================
     # GRÁFICO 3: SNACKS
     # ============================================
     st.subheader("🍪 Snacks más consumidos")
 
+    def normalizar_snack_global(texto):
+        """Quita los ejemplos entre paréntesis para agrupar snacks similares."""
+        if pd.isna(texto):
+            return None
+        texto = str(texto).strip()
+        if "(" in texto:
+            base = texto.split("(")[0].strip()
+            contenido = texto.split("(")[1].lower()
+            if "salad" in contenido or "rex" in contenido or "club" in contenido:
+                return f"{base} (saladas)"
+            elif "dulce" in contenido or "oreo" in contenido or "pepito" in contenido:
+                return f"{base} (dulces)"
+            else:
+                return base
+        return texto
+
     todos_snacks = []
     for snacks in df_filtrado["tipo_snack"].dropna():
-        for s in str(snacks).split(","):
-            s = s.strip()
-            if s and s.lower() != "nan":
-                todos_snacks.append(s)
+        snack_norm = normalizar_snack_global(snacks)
+        if snack_norm and snack_norm.lower() != "nan":
+            todos_snacks.append(snack_norm)
 
     if todos_snacks:
         conteo_snacks = pd.Series(todos_snacks).value_counts().head(10).reset_index()
