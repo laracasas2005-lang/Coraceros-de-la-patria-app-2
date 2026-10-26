@@ -258,12 +258,12 @@ if datos_cargados and len(df) > 0:
     st.markdown("---")
 
     # ============================================
-    # NUEVA SECCIÓN: RESULTADOS DIRECTOS DE LAS PREGUNTAS
+    # NUEVA SECCIÓN: RESULTADOS DIRECTOS DE LAS ENCUESTAS
     # ============================================
-    st.subheader("🗣️ Resultados directos de las preguntas")
-    st.caption("Respuestas tal como las marcaron los niños, sin transformaciones.")
+    st.subheader("🗣️ Resultados directos de las encuestas")
+    st.caption("Respuestas tal como las marcaron los niños en cada pregunta.")
 
-    # --- 1. ¿Cuántas comidas al día? ---
+    # --- ¿Cuántas comidas al día? ---
     col_p1, col_p2 = st.columns(2)
 
     with col_p1:
@@ -298,7 +298,7 @@ if datos_cargados and len(df) > 0:
         fig_p2.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
         st.plotly_chart(fig_p2, use_container_width=True)
 
-    # --- 2. ¿Qué comidas come? (multirespuesta) ---
+    # --- Tipos de comida que consumen ---
     st.markdown("#### 🍽️ Tipos de comida que consumen")
     st.caption("Cada niño podía elegir más de una opción. Se muestran todas las combinaciones posibles.")
 
@@ -327,17 +327,17 @@ if datos_cargados and len(df) > 0:
                              coloraxis_showscale=False)
         st.plotly_chart(fig_p3, use_container_width=True)
 
-    # --- 3. Frecuencia de consumo por tipo de comida ---
+    # --- Frecuencia de consumo de cada comida ---
     st.markdown("#### 🔄 Frecuencia de consumo de cada comida")
     st.caption("¿Con qué frecuencia come pasta, carne y milanesa?")
 
-    col_f1, col_f2, col_f3 = st.columns(3)
+    col_c1, col_c2, col_c3 = st.columns(3)
 
     comidas = [("pasta", "Pasta / fideos"),
                ("carne", "Carne"),
                ("milanesa", "Milanesa / patitas de pollo")]
 
-    for col, (col_name, titulo) in zip([col_f1, col_f2, col_f3], comidas):
+    for col, (col_name, titulo) in zip([col_c1, col_c2, col_c3], comidas):
         with col:
             conteo = df_filtrado[col_name].value_counts().reset_index()
             conteo.columns = ["Respuesta", "Cantidad"]
@@ -354,9 +354,8 @@ if datos_cargados and len(df) > 0:
             fig.update_layout(height=350, showlegend=False, xaxis_tickangle=-20)
             st.plotly_chart(fig, use_container_width=True)
 
-    # --- 4. Frutas y verduras ---
+    # --- Frutas y verduras ---
     st.markdown("#### 🥦 Frecuencia de consumo de frutas y verduras")
-
     conteo_frutas = df_filtrado["frecuencia_frutas_verduras"].value_counts().reset_index()
     conteo_frutas.columns = ["Respuesta", "Cantidad"]
     fig_frutas = px.bar(
@@ -372,7 +371,7 @@ if datos_cargados and len(df) > 0:
     fig_frutas.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
     st.plotly_chart(fig_frutas, use_container_width=True)
 
-    # --- 5. Snacks: frecuencia y tipo ---
+    # --- Snacks: frecuencia y tipo ---
     st.markdown("#### 🍪 Consumo de snacks")
 
     col_s1, col_s2 = st.columns(2)
@@ -419,7 +418,7 @@ if datos_cargados and len(df) > 0:
                                  coloraxis_showscale=False)
             st.plotly_chart(fig_s2, use_container_width=True)
 
-    # --- 6. ¿Come entre comidas? ---
+    # --- ¿Come entre comidas? y ¿Termina el plato? ---
     col_e1, col_e2 = st.columns(2)
 
     with col_e1:
@@ -544,7 +543,7 @@ if datos_cargados and len(df) > 0:
     st.markdown("---")
 
     # ============================================
-    # GRÁFICO 3: SNACKS
+    # GRÁFICO 3: SNACKS (top 10)
     # ============================================
     st.subheader("🍪 Snacks más consumidos")
 
@@ -815,6 +814,7 @@ if datos_cargados and len(df) > 0:
     # ============================================
     st.subheader("📝 Conclusiones del estudio")
 
-    st.write(
-        f"A partir del análisis de **{len(df)} niños** encuestados, se observa que: "
-        f"el **
+    st.write(f"""
+    A partir del análisis de **{len(df)} niños** encuestados, se observa que:
+
+    - **{pct_deporte:.0
