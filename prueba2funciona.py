@@ -343,16 +343,34 @@ if datos_cargados and len(df) > 0:
         fig_s1.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
         st.plotly_chart(fig_s1, use_container_width=True)
 
-    with col_s2:
+       with col_s2:
+        def normalizar_snack(texto):
+            """Quita los ejemplos entre paréntesis para agrupar snacks similares."""
+            if pd.isna(texto):
+                return None
+            texto = str(texto).strip()
+            # Si tiene paréntesis, conservar solo lo que está antes
+            if "(" in texto:
+                # Detectar si es "Galletitas (saladas ...)" o "Galletitas (dulces ...)"
+                base = texto.split("(")[0].strip()
+                contenido = texto.split("(")[1].lower()
+                if "salad" in contenido or "rex" in contenido or "club" in contenido:
+                    return f"{base} (saladas)"
+                elif "dulce" in contenido or "oreo" in contenido or "pepito" in contenido:
+                    return f"{base} (dulces)"
+                else:
+                    return base
+            return texto
+
         todos_snacks = []
         for snacks in df_filtrado["tipo_snack"].dropna():
-            for s in str(snacks).split(","):
-                s = s.strip()
-                if s and s.lower() != "nan":
-                    todos_snacks.append(s)
+            # Primero normalizamos el texto completo
+            snack_norm = normalizar_snack(snacks)
+            if snack_norm and snack_norm.lower() != "nan":
+                todos_snacks.append(snack_norm)
 
         if todos_snacks:
-            conteo_tipos_snack = pd.Series(todos_snacks).value_counts().head(8).reset_index()
+            conteo_tipos_snack = pd.Series(todos_snacks).value_counts().head(10).reset_index()
             conteo_tipos_snack.columns = ["Snack", "Cantidad"]
             fig_s2 = px.bar(
                 conteo_tipos_snack,
