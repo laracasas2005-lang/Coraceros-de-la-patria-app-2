@@ -806,14 +806,11 @@ if datos_cargados and len(df) > 0:
 
     st.markdown("---")
 
-    # ============================================
+# ============================================
     # HALLAZGOS
     # ============================================
     st.subheader("💡 Hallazgos principales")
 
-    col_hall1, col_hall2, col_hall3 = st.columns(3)
-
-    pct_deporte = (df["hace_deporte"] == "Sí").sum() / len(df) *
     col_hall1, col_hall2, col_hall3 = st.columns(3)
 
     pct_deporte = (df["hace_deporte"] == "Sí").sum() / len(df) * 100
