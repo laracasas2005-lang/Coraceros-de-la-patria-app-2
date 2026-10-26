@@ -814,7 +814,30 @@ if datos_cargados and len(df) > 0:
     # ============================================
     st.subheader("📝 Conclusiones del estudio")
 
-    st.write(f"""
-    A partir del análisis de **{len(df)} niños** encuestados, se observa que:
+    st.write(
+        f"A partir del análisis de **{len(df)} niños** encuestados, se observa que:\n\n"
+        f"- **{pct_deporte:.0f}%** de los niños practica algún deporte regularmente.\n"
+        f"- **{pct_snacks:.0f}%** consume snacks entre comidas, principalmente galletitas y caramelos.\n"
+        f"- **{pct_buena_hidra:.0f}%** mantiene una buena hidratación durante el día.\n"
+        f"- Existe una relación entre el tipo de alimentación y el nivel de actividad física.\n"
+        f"- El consumo de ultraprocesados tiende a asociarse con menor actividad física."
+    )
 
-    - **{pct_deporte:.0
+    st.markdown("---")
+
+    # ============================================
+    # PIE DE PÁGINA
+    # ============================================
+    st.caption("📊 Estudio cuantitativo sobre alimentación y deporte en niños")
+    st.caption("Villa José León Suárez, San Martín · Datos reales del relevamiento")
+    st.caption("Desarrollado con Streamlit, Plotly y Pandas")
+
+else:
+    st.warning(
+        "⚠️ No se pudieron cargar los datos. Verificá que los archivos CSV estén en la misma carpeta que `app.py`."
+    )
+    st.info("""
+    **Archivos necesarios:**
+    - `form-1__encuesta-sobre-habitos-alimentarios.csv`
+    - `form-2__actividad-fisica.csv`
+    """)
