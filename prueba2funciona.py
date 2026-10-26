@@ -302,7 +302,6 @@ if datos_cargados and len(df) > 0:
     st.markdown("#### 🍽️ Tipos de comida que consumen")
     st.caption("Cada niño podía elegir más de una opción. Se muestran todas las combinaciones posibles.")
 
-    # Extraer todas las opciones de tipo_comida (separadas por coma)
     opciones_comida = []
     for item in df_filtrado["tipo_comida"].dropna():
         for opt in str(item).split(","):
@@ -328,7 +327,7 @@ if datos_cargados and len(df) > 0:
                              coloraxis_showscale=False)
         st.plotly_chart(fig_p3, use_container_width=True)
 
-    # --- 3. Frecuencia de consumo por tipo de comida (pasta, carne, milanesa) ---
+    # --- 3. Frecuencia de consumo por tipo de comida ---
     st.markdown("#### 🔄 Frecuencia de consumo de cada comida")
     st.caption("¿Con qué frecuencia come pasta, carne y milanesa?")
 
@@ -387,7 +386,7 @@ if datos_cargados and len(df) > 0:
             y="Cantidad",
             title="¿Con qué frecuencia comés snacks?",
             color="Respuesta",
-            color_discrete_sequence=px.colors.qualitative.Pastel,  # ✅ CORREGIDO
+            color_discrete_sequence=px.colors.qualitative.Pastel,
             text="Cantidad"
         )
         fig_s1.update_traces(textposition='outside')
@@ -395,7 +394,6 @@ if datos_cargados and len(df) > 0:
         st.plotly_chart(fig_s1, use_container_width=True)
 
     with col_s2:
-        # Tipos de snack (multirespuesta)
         todos_snacks = []
         for snacks in df_filtrado["tipo_snack"].dropna():
             for s in str(snacks).split(","):
@@ -817,5 +815,6 @@ if datos_cargados and len(df) > 0:
     # ============================================
     st.subheader("📝 Conclusiones del estudio")
 
-    st.write(f"""
-   
+    st.write(
+        f"A partir del análisis de **{len(df)} niños** encuestados, se observa que: "
+        f"el **
