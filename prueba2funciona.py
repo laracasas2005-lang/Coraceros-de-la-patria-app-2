@@ -258,6 +258,207 @@ if datos_cargados and len(df) > 0:
     st.markdown("---")
 
     # ============================================
+    # NUEVA SECCIÓN: RESULTADOS DIRECTOS DE LAS PREGUNTAS
+    # ============================================
+    st.subheader("🗣️ Resultados directos de las preguntas")
+    st.caption("Respuestas tal como las marcaron los niños, sin transformaciones.")
+
+    # --- 1. ¿Cuántas comidas al día? ---
+    col_p1, col_p2 = st.columns(2)
+
+    with col_p1:
+        conteo_comidas = df_filtrado["comidas_al_dia"].value_counts().reset_index()
+        conteo_comidas.columns = ["Respuesta", "Cantidad"]
+        fig_p1 = px.bar(
+            conteo_comidas,
+            x="Respuesta",
+            y="Cantidad",
+            title="¿Cuántas comidas al día hacés?",
+            color="Respuesta",
+            color_discrete_sequence=px.colors.qualitative.Set2,
+            text="Cantidad"
+        )
+        fig_p1.update_traces(textposition='outside')
+        fig_p1.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
+        st.plotly_chart(fig_p1, use_container_width=True)
+
+    with col_p2:
+        conteo_frec = df_filtrado["frecuencia_alimentacion"].value_counts().reset_index()
+        conteo_frec.columns = ["Respuesta", "Cantidad"]
+        fig_p2 = px.bar(
+            conteo_frec,
+            x="Respuesta",
+            y="Cantidad",
+            title="¿Con qué frecuencia comés?",
+            color="Respuesta",
+            color_discrete_sequence=px.colors.qualitative.Set3,
+            text="Cantidad"
+        )
+        fig_p2.update_traces(textposition='outside')
+        fig_p2.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
+        st.plotly_chart(fig_p2, use_container_width=True)
+
+    # --- 2. ¿Qué comidas come? (multirespuesta) ---
+    st.markdown("#### 🍽️ Tipos de comida que consumen")
+    st.caption("Cada niño podía elegir más de una opción. Se muestran todas las combinaciones posibles.")
+
+    # Extraer todas las opciones de tipo_comida (separadas por coma)
+    opciones_comida = []
+    for item in df_filtrado["tipo_comida"].dropna():
+        for opt in str(item).split(","):
+            opt = opt.strip()
+            if opt and opt.lower() != "nan":
+                opciones_comida.append(opt)
+
+    if opciones_comida:
+        conteo_tipos = pd.Series(opciones_comida).value_counts().reset_index()
+        conteo_tipos.columns = ["Tipo de comida", "Cantidad"]
+        fig_p3 = px.bar(
+            conteo_tipos,
+            x="Cantidad",
+            y="Tipo de comida",
+            orientation="h",
+            title="Tipos de comida más elegidos",
+            color="Cantidad",
+            color_continuous_scale="Teal",
+            text="Cantidad"
+        )
+        fig_p3.update_traces(textposition='outside')
+        fig_p3.update_layout(height=400, showlegend=False, yaxis=dict(autorange="reversed"),
+                             coloraxis_showscale=False)
+        st.plotly_chart(fig_p3, use_container_width=True)
+
+    # --- 3. Frecuencia de consumo por tipo de comida (pasta, carne, milanesa) ---
+    st.markdown("#### 🔄 Frecuencia de consumo de cada comida")
+    st.caption("¿Con qué frecuencia come pasta, carne y milanesa?")
+
+    col_f1, col_f2, col_f3 = st.columns(3)
+
+    comidas = [("pasta", "Pasta / fideos"),
+               ("carne", "Carne"),
+               ("milanesa", "Milanesa / patitas de pollo")]
+
+    for col, (col_name, titulo) in zip([col_f1, col_f2, col_f3], comidas):
+        with col:
+            conteo = df_filtrado[col_name].value_counts().reset_index()
+            conteo.columns = ["Respuesta", "Cantidad"]
+            fig = px.bar(
+                conteo,
+                x="Respuesta",
+                y="Cantidad",
+                title=titulo,
+                color="Respuesta",
+                color_discrete_sequence=px.colors.qualitative.Pastel,
+                text="Cantidad"
+            )
+            fig.update_traces(textposition='outside')
+            fig.update_layout(height=350, showlegend=False, xaxis_tickangle=-20)
+            st.plotly_chart(fig, use_container_width=True)
+
+    # --- 4. Frutas y verduras ---
+    st.markdown("#### 🥦 Frecuencia de consumo de frutas y verduras")
+
+    conteo_frutas = df_filtrado["frecuencia_frutas_verduras"].value_counts().reset_index()
+    conteo_frutas.columns = ["Respuesta", "Cantidad"]
+    fig_frutas = px.bar(
+        conteo_frutas,
+        x="Respuesta",
+        y="Cantidad",
+        title="¿Con qué frecuencia comés frutas y verduras?",
+        color="Respuesta",
+        color_discrete_sequence=px.colors.qualitative.Set1,
+        text="Cantidad"
+    )
+    fig_frutas.update_traces(textposition='outside')
+    fig_frutas.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
+    st.plotly_chart(fig_frutas, use_container_width=True)
+
+    # --- 5. Snacks: frecuencia y tipo ---
+    st.markdown("#### 🍪 Consumo de snacks")
+
+    col_s1, col_s2 = st.columns(2)
+
+    with col_s1:
+        conteo_frec_snacks = df_filtrado["frecuencia_snacks"].value_counts().reset_index()
+        conteo_frec_snacks.columns = ["Respuesta", "Cantidad"]
+        fig_s1 = px.bar(
+            conteo_frec_snacks,
+            x="Respuesta",
+            y="Cantidad",
+            title="¿Con qué frecuencia comés snacks?",
+            color="Respuesta",
+            color_discrete_sequence=px.colors.qualitative.Warm,
+            text="Cantidad"
+        )
+        fig_s1.update_traces(textposition='outside')
+        fig_s1.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
+        st.plotly_chart(fig_s1, use_container_width=True)
+
+    with col_s2:
+        # Tipos de snack (multirespuesta)
+        todos_snacks = []
+        for snacks in df_filtrado["tipo_snack"].dropna():
+            for s in str(snacks).split(","):
+                s = s.strip()
+                if s and s.lower() != "nan":
+                    todos_snacks.append(s)
+
+        if todos_snacks:
+            conteo_tipos_snack = pd.Series(todos_snacks).value_counts().head(8).reset_index()
+            conteo_tipos_snack.columns = ["Snack", "Cantidad"]
+            fig_s2 = px.bar(
+                conteo_tipos_snack,
+                x="Cantidad",
+                y="Snack",
+                orientation="h",
+                title="Tipos de snack preferidos",
+                color="Cantidad",
+                color_continuous_scale="Oranges",
+                text="Cantidad"
+            )
+            fig_s2.update_traces(textposition='outside')
+            fig_s2.update_layout(height=400, showlegend=False, yaxis=dict(autorange="reversed"),
+                                 coloraxis_showscale=False)
+            st.plotly_chart(fig_s2, use_container_width=True)
+
+    # --- 6. ¿Come entre comidas? ---
+    col_e1, col_e2 = st.columns(2)
+
+    with col_e1:
+        conteo_entre = df_filtrado["come_entre_comidas"].value_counts().reset_index()
+        conteo_entre.columns = ["Respuesta", "Cantidad"]
+        fig_e1 = px.pie(
+            conteo_entre,
+            names="Respuesta",
+            values="Cantidad",
+            title="¿Comés algo entre comidas?",
+            color="Respuesta",
+            color_discrete_map={"Sí": "#1EA574", "No": "#E4694E"},
+            hole=0.4
+        )
+        fig_e1.update_traces(textposition='inside', textinfo='percent+label')
+        fig_e1.update_layout(height=400)
+        st.plotly_chart(fig_e1, use_container_width=True)
+
+    with col_e2:
+        conteo_termina = df_filtrado["termina_plato"].value_counts().reset_index()
+        conteo_termina.columns = ["Respuesta", "Cantidad"]
+        fig_e2 = px.bar(
+            conteo_termina,
+            x="Respuesta",
+            y="Cantidad",
+            title="¿Terminás el plato?",
+            color="Respuesta",
+            color_discrete_sequence=px.colors.qualitative.Set2,
+            text="Cantidad"
+        )
+        fig_e2.update_traces(textposition='outside')
+        fig_e2.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
+        st.plotly_chart(fig_e2, use_container_width=True)
+
+    st.markdown("---")
+
+    # ============================================
     # GRÁFICO 1: DISTRIBUCIÓN
     # ============================================
     st.subheader("🍎 Distribución por tipo de alimentación y actividad")
@@ -345,7 +546,7 @@ if datos_cargados and len(df) > 0:
     st.markdown("---")
 
     # ============================================
-    # GRÁFICO 3: SNACKS
+    # GRÁFICO 3: SNACKS (se mantiene el original)
     # ============================================
     st.subheader("🍪 Snacks más consumidos")
 
@@ -437,7 +638,7 @@ if datos_cargados and len(df) > 0:
     st.markdown("---")
 
     # ============================================
-    # GRÁFICO 5: CORRELACIÓN (CORREGIDO)
+    # GRÁFICO 5: CORRELACIÓN
     # ============================================
     st.subheader("🔗 Matriz de correlación entre variables")
 
@@ -446,25 +647,17 @@ if datos_cargados and len(df) > 0:
     else:
         df_corr = df_filtrado.copy()
 
-        # --- Codificar variables categóricas a numéricas ---
         df_corr["alim_num"] = df_corr["tipo_alimentacion"].map({
-            "Saludable": 3,
-            "Mixta": 2,
-            "Alta en ultraprocesados": 1
+            "Saludable": 3, "Mixta": 2, "Alta en ultraprocesados": 1
         })
 
         df_corr["activ_num"] = df_corr["nivel_actividad"].map({
-            "Actividad alta": 4,
-            "Actividad media": 3,
-            "Actividad baja": 2,
-            "No hace deporte": 1,
-            "Sin datos": np.nan
+            "Actividad alta": 4, "Actividad media": 3, "Actividad baja": 2,
+            "No hace deporte": 1, "Sin datos": np.nan
         })
 
         df_corr["hidra_num"] = df_corr["hidratacion"].map({
-            "Buena hidratación": 3,
-            "Hidratación media": 2,
-            "Baja hidratación": 1
+            "Buena hidratación": 3, "Hidratación media": 2, "Baja hidratación": 1
         })
 
         df_corr["snacks_num"] = df_corr["consume_snacks"].map({"Sí": 1, "No": 0})
@@ -476,19 +669,14 @@ if datos_cargados and len(df) > 0:
         etiquetas = ["Alimentación", "Actividad", "Hidratación",
                      "Snacks", "Entre comidas", "Energía"]
 
-        # --- Detectar variables sin variabilidad (varianza = 0) ---
         variables_sin_varianza = []
         for col, etiq in zip(columnas_corr, etiquetas):
             if df_corr[col].nunique(dropna=True) <= 1:
                 variables_sin_varianza.append(etiq)
 
-        # --- Calcular correlación ---
         corr_matrix = df_corr[columnas_corr].corr()
-
-        # --- Rellenar NaN con 0 para que no aparezcan celdas vacías ---
         corr_matrix_clean = corr_matrix.fillna(0)
 
-        # --- Crear el heatmap ---
         fig7 = go.Figure(data=go.Heatmap(
             z=corr_matrix_clean.values,
             x=etiquetas,
@@ -511,7 +699,6 @@ if datos_cargados and len(df) > 0:
 
         st.plotly_chart(fig7, use_container_width=True)
 
-        # --- Avisos sobre variables problemáticas ---
         if variables_sin_varianza:
             st.info(
                 f"ℹ️ **Variables sin variabilidad suficiente:** {', '.join(variables_sin_varianza)}. "
@@ -519,7 +706,6 @@ if datos_cargados and len(df) > 0:
                 f"por lo que su correlación no puede calcularse (se muestra como 0.00)."
             )
 
-        # --- Advertencia sobre tamaño de muestra ---
         if len(df_filtrado) < 30:
             st.warning(
                 f"⚠️ **Muestra pequeña:** con solo {len(df_filtrado)} registros, "
@@ -527,7 +713,6 @@ if datos_cargados and len(df) > 0:
                 f"para obtener resultados estadísticamente significativos."
             )
 
-        # --- Nota explicativa ---
         with st.expander("ℹ️ ¿Cómo interpretar la matriz de correlación?"):
             st.markdown("""
             - **+1.00**: relación directa perfecta (cuando una sube, la otra también)
@@ -627,35 +812,4 @@ if datos_cargados and len(df) > 0:
 
     st.markdown("---")
 
-    # ============================================
-    # CONCLUSIONES
-    # ============================================
-    st.subheader("📝 Conclusiones del estudio")
-
-    st.write(f"""
-    A partir del análisis de **{len(df)} niños** encuestados, se observa que:
-
-    - **{pct_deporte:.0f}%** de los niños practica algún deporte regularmente.
-    - **{pct_snacks:.0f}%** consume snacks entre comidas, principalmente galletitas y caramelos.
-    - **{pct_buena_hidra:.0f}%** mantiene una buena hidratación durante el día.
-    - Existe una relación entre el tipo de alimentación y el nivel de actividad física.
-    - El consumo de ultraprocesados tiende a asociarse con menor actividad física.
-    """)
-
-    st.markdown("---")
-
-    # ============================================
-    # PIE DE PÁGINA
-    # ============================================
-    st.caption("📊 Estudio cuantitativo sobre alimentación y deporte en niños")
-    st.caption("Villa José León Suárez, San Martín · Datos reales del relevamiento")
-    st.caption("Desarrollado con Streamlit, Plotly y Pandas")
-
-else:
-    st.warning(
-        "⚠️ No se pudieron cargar los datos. Verificá que los archivos CSV estén en la misma carpeta que `app.py`.")
-    st.info("""
-    **Archivos necesarios:**
-    - `form-1__encuesta-sobre-habitos-alimentarios.csv`
-    - `form-2__actividad-fisica.csv`
-    """)
+   
