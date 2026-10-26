@@ -387,7 +387,7 @@ if datos_cargados and len(df) > 0:
             y="Cantidad",
             title="¿Con qué frecuencia comés snacks?",
             color="Respuesta",
-            color_discrete_sequence=px.colors.qualitative.Warm,
+            color_discrete_sequence=px.colors.qualitative.Pastel,  # ✅ CORREGIDO
             text="Cantidad"
         )
         fig_s1.update_traces(textposition='outside')
@@ -546,7 +546,7 @@ if datos_cargados and len(df) > 0:
     st.markdown("---")
 
     # ============================================
-    # GRÁFICO 3: SNACKS (se mantiene el original)
+    # GRÁFICO 3: SNACKS
     # ============================================
     st.subheader("🍪 Snacks más consumidos")
 
@@ -812,4 +812,10 @@ if datos_cargados and len(df) > 0:
 
     st.markdown("---")
 
+    # ============================================
+    # CONCLUSIONES
+    # ============================================
+    st.subheader("📝 Conclusiones del estudio")
+
+    st.write(f"""
    
