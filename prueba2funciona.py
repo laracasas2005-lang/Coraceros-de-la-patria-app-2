@@ -264,42 +264,7 @@ if datos_cargados and len(df) > 0:
     st.subheader("🗣️ Resultados directos de las encuestas")
     st.caption("Respuestas tal como las marcaron los niños en cada pregunta.")
 
-    # --- 1. Comidas al día y frecuencia de alimentación ---
-    col_p1, col_p2 = st.columns(2)
-
-    with col_p1:
-        conteo_comidas = df_filtrado["comidas_al_dia"].value_counts().reset_index()
-        conteo_comidas.columns = ["Respuesta", "Cantidad"]
-        fig_p1 = px.bar(
-            conteo_comidas,
-            x="Respuesta",
-            y="Cantidad",
-            title="¿Cuántas comidas al día hacés?",
-            color="Respuesta",
-            color_discrete_sequence=px.colors.qualitative.Set2,
-            text="Cantidad"
-        )
-        fig_p1.update_traces(textposition='outside')
-        fig_p1.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
-        st.plotly_chart(fig_p1, use_container_width=True)
-
-    with col_p2:
-        conteo_frec = df_filtrado["frecuencia_alimentacion"].value_counts().reset_index()
-        conteo_frec.columns = ["Respuesta", "Cantidad"]
-        fig_p2 = px.bar(
-            conteo_frec,
-            x="Respuesta",
-            y="Cantidad",
-            title="¿Con qué frecuencia comés?",
-            color="Respuesta",
-            color_discrete_sequence=px.colors.qualitative.Set3,
-            text="Cantidad"
-        )
-        fig_p2.update_traces(textposition='outside')
-        fig_p2.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
-        st.plotly_chart(fig_p2, use_container_width=True)
-
-    # --- 2. Tipos de comida que consumen ---
+    # --- 1. Tipos de comida que consumen ---
     st.markdown("#### 🍽️ Tipos de comida que consumen")
     st.caption("Cada niño podía elegir más de una opción. Se muestran todas las combinaciones posibles.")
 
@@ -329,7 +294,7 @@ if datos_cargados and len(df) > 0:
                              coloraxis_showscale=False)
         st.plotly_chart(fig_p3, use_container_width=True)
 
-    # --- 3. Frecuencia de consumo de cada comida ---
+    # --- 2. Frecuencia de consumo de cada comida ---
     st.markdown("#### 🔄 Frecuencia de consumo de cada comida")
     st.caption("¿Con qué frecuencia come pasta, carne y milanesa?")
 
@@ -356,23 +321,8 @@ if datos_cargados and len(df) > 0:
             fig.update_layout(height=350, showlegend=False, xaxis_tickangle=-20)
             st.plotly_chart(fig, use_container_width=True)
 
-      # --- 4. Frutas y verduras ---
-    st.markdown("#### 🥦 Frecuencia de consumo de frutas y verduras")
-    conteo_frutas = df_filtrado["frecuencia_frutas_verduras"].value_counts().reset_index()
-    conteo_frutas.columns = ["Respuesta", "Cantidad"]
-    fig_frutas = px.bar(
-        conteo_frutas,
-        x="Respuesta",
-        y="Cantidad",
-        title="¿Con qué frecuencia comés frutas y verduras?",
-        color="Respuesta",
-        color_discrete_sequence=px.colors.qualitative.Set1,
-        text="Cantidad"
-    )
-    fig_frutas.update_traces(textposition='outside')
-    fig_frutas.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
-    st.plotly_chart(fig_frutas, use_container_width=True)
-    # --- 5. Snacks: frecuencia y tipo ---
+     
+    # --- 3. Snacks: frecuencia y tipo ---
     st.markdown("#### 🍪 Consumo de snacks")
 
     col_s1, col_s2 = st.columns(2)
@@ -420,7 +370,7 @@ if datos_cargados and len(df) > 0:
                                  coloraxis_showscale=False)
             st.plotly_chart(fig_s2, use_container_width=True)
 
-    # --- 6. ¿Come entre comidas? y ¿Termina el plato? ---
+    # --- 4. ¿Come entre comidas? y ¿Termina el plato? ---
     col_e1, col_e2 = st.columns(2)
 
     with col_e1:
@@ -455,7 +405,7 @@ if datos_cargados and len(df) > 0:
         fig_e2.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
         st.plotly_chart(fig_e2, use_container_width=True)
 
-    # --- 7. Hidratación (respuesta directa) ---
+    # --- 5. Hidratación (respuesta directa) ---
     st.markdown("#### 💧 ¿Cuánta agua tomás durante el día?")
     conteo_agua = df_filtrado["frecuencia_agua"].value_counts().reset_index()
     conteo_agua.columns = ["Respuesta", "Cantidad"]
@@ -472,7 +422,7 @@ if datos_cargados and len(df) > 0:
     fig_agua.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
     st.plotly_chart(fig_agua, use_container_width=True)
 
-    # --- 8. ¿Tenés alguna dieta especial? ---
+    # --- 6. ¿Tenés alguna dieta especial? ---
     st.markdown("#### 🥗 ¿Tenés alguna dieta especial?")
     conteo_dieta = df_filtrado["dieta_especial"].value_counts().reset_index()
     conteo_dieta.columns = ["Respuesta", "Cantidad"]
