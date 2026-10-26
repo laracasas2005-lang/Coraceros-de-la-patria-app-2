@@ -246,37 +246,6 @@ if datos_cargados and len(df) > 0:
 
     col_p1, col_p2 = st.columns(2)
 
-    with col_p1:
-        conteo_comidas = df_filtrado["comidas_al_dia"].value_counts().reset_index()
-        conteo_comidas.columns = ["Respuesta", "Cantidad"]
-        fig_p1 = px.bar(
-            conteo_comidas,
-            x="Respuesta",
-            y="Cantidad",
-            title="¿Cuántas comidas al día hacés?",
-            color="Respuesta",
-            color_discrete_sequence=px.colors.qualitative.Set2,
-            text="Cantidad"
-        )
-        fig_p1.update_traces(textposition='outside')
-        fig_p1.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
-        st.plotly_chart(fig_p1, use_container_width=True)
-
-    with col_p2:
-        conteo_frec = df_filtrado["frecuencia_alimentacion"].value_counts().reset_index()
-        conteo_frec.columns = ["Respuesta", "Cantidad"]
-        fig_p2 = px.bar(
-            conteo_frec,
-            x="Respuesta",
-            y="Cantidad",
-            title="¿Con qué frecuencia comés?",
-            color="Respuesta",
-            color_discrete_sequence=px.colors.qualitative.Set3,
-            text="Cantidad"
-        )
-        fig_p2.update_traces(textposition='outside')
-        fig_p2.update_layout(height=400, showlegend=False, xaxis_tickangle=-15)
-        st.plotly_chart(fig_p2, use_container_width=True)
 
     # Tipos de comida
     st.markdown("#### 🍽️ Tipos de comida que consumen")
